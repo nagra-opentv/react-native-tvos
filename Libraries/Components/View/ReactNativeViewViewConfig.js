@@ -10,7 +10,6 @@
 
 'use strict';
 import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid';
-import ReactNativeViewViewConfigAppleTV from './ReactNativeViewViewConfigAppleTV';
 import {Platform} from 'react-native';
 
 const ReactNativeViewConfig = {
@@ -116,7 +115,6 @@ const ReactNativeViewConfig = {
   },
   validAttributes: {
     ...ReactNativeViewViewConfigAndroid.validAttributes,
-    ...ReactNativeViewViewConfigAppleTV.validAttributes,
     accessibilityActions: true,
     accessibilityElementsHidden: true,
     accessibilityHint: true,

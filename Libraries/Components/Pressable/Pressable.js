@@ -27,28 +27,11 @@ import usePressability from '../../Pressability/usePressability';
 import {normalizeRect, type RectOrSize} from '../../StyleSheet/Rect';
 import type {LayoutEvent, PressEvent} from '../../Types/CoreEventTypes';
 import View from '../View/View';
-import typeof TVParallaxPropertiesType from '../AppleTV/TVViewPropTypes';
-import useTVEventHandler from '../AppleTV/useTVEventHandler';
-import Platform from '../../Utilities/Platform';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
 
 export type StateCallbackType = $ReadOnly<{|
   pressed: boolean,
-  focused: boolean,
-|}>;
-
-type TVProps = $ReadOnly<{|
-  hasTVPreferredFocus?: boolean,
-  isTVSelectable?: ?boolean,
-  tvParallaxProperties?: TVParallaxPropertiesType,
-  nextFocusDown?: ?number,
-  nextFocusForward?: ?number,
-  nextFocusLeft?: ?number,
-  nextFocusRight?: ?number,
-  nextFocusUp?: ?number,
-  onFocus?: ?(event: FocusEvent) => mixed,
-  onBlur?: ?(event: FocusEvent) => mixed,
 |}>;
 
 type Props = $ReadOnly<{|
@@ -147,10 +130,11 @@ type Props = $ReadOnly<{|
    * Used only for documentation or testing (e.g. snapshot testing).
    */
   testOnly_pressed?: ?boolean,
+
   /**
-   * Props needed for Apple TV and Android TV
+   * Duration to wait after press down before calling `onPressIn`.
    */
-  ...TVProps,
+  unstable_pressDelay?: ?number,
 |}>;
 
 /**
@@ -166,9 +150,6 @@ function Pressable(props: Props, forwardedRef): React.Node {
     delayLongPress,
     disabled,
     focusable,
-    isTVSelectable,
-    onBlur,
-    onFocus,
     onLongPress,
     onPress,
     onPressIn,
@@ -176,6 +157,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     pressRetentionOffset,
     style,
     testOnly_pressed,
+    unstable_pressDelay,
     ...restProps
   } = props;
 
@@ -186,9 +168,15 @@ function Pressable(props: Props, forwardedRef): React.Node {
 
   const [pressed, setPressed] = usePressState(testOnly_pressed === true);
 
-  const [focused, setFocused] = useState(false);
-
   const hitSlop = normalizeRect(props.hitSlop);
+
+  const restPropsWithDefaults: React.ElementConfig<typeof View> = {
+    ...restProps,
+    ...android_rippleConfig?.viewProps,
+    accessible: accessible !== false,
+    focusable: focusable !== false,
+    hitSlop,
+  };
 
   const config = useMemo(
     () => ({
@@ -197,8 +185,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       pressRectOffset: pressRetentionOffset,
       android_disableSound,
       delayLongPress,
-      onBlur,
-      onFocus,
+      delayPressIn: unstable_pressDelay,
       onLongPress,
       onPress,
       onPressIn(event: PressEvent): void {
@@ -227,55 +214,25 @@ function Pressable(props: Props, forwardedRef): React.Node {
       delayLongPress,
       disabled,
       hitSlop,
-      onBlur,
-      onFocus,
       onLongPress,
       onPress,
       onPressIn,
       onPressOut,
       pressRetentionOffset,
       setPressed,
+      unstable_pressDelay,
     ],
   );
   const eventHandlers = usePressability(config);
 
-  const pressableTVEventHandler = (evt: Event) => {
-    if (props.isTVSelectable !== false || props.focusable !== false) {
-      if (viewRef.current._nativeTag === evt.target) {
-        if (evt?.eventType === 'focus') {
-          setFocused(true);
-          onFocus && onFocus(evt);
-        } else if (evt.eventType === 'blur') {
-          onBlur && onBlur(evt);
-          setFocused(false);
-        }
-      }
-      // Use these on tvOS only.  Android press events go to onClick() so we don't
-      // need to call onPress() again here
-      if (Platform.isTVOS) {
-        if (focused && evt.eventType === 'select') {
-          onPress && onPress(evt);
-        }
-        if (focused && evt.eventType === 'longSelect') {
-          onLongPress && onLongPress(evt);
-        }
-      }
-    }
-  };
-  useTVEventHandler(pressableTVEventHandler);
-
   return (
     <View
-      {...restProps}
+      {...restPropsWithDefaults}
       {...eventHandlers}
-      {...android_rippleConfig?.viewProps}
-      accessible={accessible !== false}
-      focusable={focusable !== false}
-      isTVSelectable={isTVSelectable !== false && accessible !== false}
-      hitSlop={hitSlop}
       ref={viewRef}
-      style={typeof style === 'function' ? style({pressed, focused}) : style}>
-      {typeof children === 'function' ? children({pressed, focused}) : children}
+      style={typeof style === 'function' ? style({pressed}) : style}
+      collapsable={false}>
+      {typeof children === 'function' ? children({pressed}) : children}
       {__DEV__ ? <PressabilityDebugView color="red" hitSlop={hitSlop} /> : null}
     </View>
   );

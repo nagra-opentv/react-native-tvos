@@ -11,12 +11,12 @@
 'use strict';
 
 import type {BubblingEventHandler, WithDefault} from '../../Types/CodegenTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 import * as React from 'react';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
 type SwitchChangeEvent = $ReadOnly<{|
@@ -54,5 +54,5 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 
 export default (codegenNativeComponent<NativeProps>('Switch', {
   paperComponentName: 'RCTSwitch',
-  excludedPlatform: 'android',
+  excludedPlatforms: ['android'],
 }): ComponentType);

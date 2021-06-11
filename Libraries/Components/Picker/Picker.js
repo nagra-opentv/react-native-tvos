@@ -17,7 +17,7 @@ const React = require('react');
 const UnimplementedView = require('../UnimplementedViews/UnimplementedView');
 
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 const MODE_DIALOG = 'dialog';
 const MODE_DROPDOWN = 'dropdown';
@@ -30,9 +30,9 @@ type PickerItemProps = $ReadOnly<{|
 
   /**
    * The value to be passed to picker's `onValueChange` callback when
-   * this item is selected. Can be a string or an integer.
+   * this item is selected.
    */
-  value?: ?(number | string),
+  value?: ?string,
 
   /**
    * Color of this item's text.
@@ -62,9 +62,9 @@ type PickerProps = $ReadOnly<{|
   style?: ?TextStyleProp,
 
   /**
-   * Value matching value of one of the items. Can be a string or an integer.
+   * Value matching value of one of the items.
    */
-  selectedValue?: ?(number | string),
+  selectedValue?: ?string,
 
   /**
    * Callback for when an item is selected. This is called with the following parameters:
@@ -146,7 +146,7 @@ class Picker extends React.Component<PickerProps> {
   };
 
   render(): React.Node {
-    if (Platform.OS === 'ios' && !Platform.isTVOS) {
+    if (Platform.OS === 'ios') {
       /* $FlowFixMe(>=0.81.0 site=react_native_ios_fb) This suppression was
        * added when renaming suppression sites. */
       return <PickerIOS {...this.props}>{this.props.children}</PickerIOS>;

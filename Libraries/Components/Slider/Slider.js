@@ -14,11 +14,10 @@ const Platform = require('../../Utilities/Platform');
 import SliderNativeComponent from './SliderNativeComponent';
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
-const UnimplementedView = require('../UnimplementedViews/UnimplementedView');
 
 import type {ImageSource} from '../../Image/ImageSource';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 
@@ -199,10 +198,7 @@ const Slider = (
   props: Props,
   forwardedRef?: ?React.Ref<typeof SliderNativeComponent>,
 ) => {
-  const style = StyleSheet.compose(
-    styles.slider,
-    props.style,
-  );
+  const style = StyleSheet.compose(styles.slider, props.style);
 
   const {
     disabled = false,
@@ -234,12 +230,6 @@ const Slider = (
         onSlidingComplete(event.nativeEvent.value);
       }
     : null;
-
-  if (Platform.isTVOS) {
-    return (
-      <UnimplementedView />
-    );
-  }
 
   return (
     <SliderNativeComponent
