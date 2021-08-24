@@ -72,6 +72,9 @@ class TextAttributes : public DebugStringConvertible {
   // Special
   better::optional<bool> isHighlighted{};
 
+  // Vertical Align
+  std::string textAlignVertical{""};
+
   // TODO T59221129: document where this value comes from and how it is set.
   // It's not clear if this is being used properly, or if it's being set at all.
   // Currently, it is intentionally *not* being set as part of BaseTextProps
@@ -129,7 +132,8 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.textShadowColor,
         textAttributes.isHighlighted,
         textAttributes.layoutDirection,
-        textAttributes.accessibilityRole);
+        textAttributes.accessibilityRole,
+	textAttributes.textAlignVertical);
   }
 };
 } // namespace std
