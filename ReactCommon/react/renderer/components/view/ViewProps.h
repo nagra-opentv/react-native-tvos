@@ -9,6 +9,7 @@
 
 #include <react/renderer/components/view/AccessibilityProps.h>
 #include <react/renderer/components/view/YogaStylableProps.h>
+#include <react/renderer/components/view/TVViewProps.h>
 #include <react/renderer/components/view/primitives.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/Props.h>
@@ -23,7 +24,7 @@ class ViewProps;
 
 using SharedViewProps = std::shared_ptr<ViewProps const>;
 
-class ViewProps : public YogaStylableProps, public AccessibilityProps {
+class ViewProps : public YogaStylableProps, public AccessibilityProps, public TVViewProps {
  public:
   ViewProps() = default;
   ViewProps(ViewProps const &sourceProps, RawProps const &rawProps);

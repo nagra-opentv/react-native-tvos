@@ -21,6 +21,7 @@ namespace react {
 ViewProps::ViewProps(ViewProps const &sourceProps, RawProps const &rawProps)
     : YogaStylableProps(sourceProps, rawProps),
       AccessibilityProps(sourceProps, rawProps),
+      TVViewProps(sourceProps, rawProps),
       opacity(
           convertRawProp(rawProps, "opacity", sourceProps.opacity, (Float)1.0)),
       foregroundColor(convertRawProp(
