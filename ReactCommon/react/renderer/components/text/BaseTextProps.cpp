@@ -96,6 +96,11 @@ static TextAttributes convertRawProp(
       "baseWritingDirection",
       sourceTextAttributes.baseWritingDirection,
       defaultTextAttributes.baseWritingDirection);
+  textAttributes.textAlignVertical = convertRawProp(
+      rawProps,
+      "textAlignVertical",
+      sourceTextAttributes.textAlignVertical,
+      defaultTextAttributes.textAlignVertical);
 
   // Decoration
   textAttributes.textDecorationColor = convertRawProp(
