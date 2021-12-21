@@ -198,7 +198,8 @@ class TouchableOpacity extends React.Component<Props, State> {
       toValue,
       duration,
       easing: Easing.inOut(Easing.quad),
-      useNativeDriver: true,
+      /*Workaround:Disable navtive animation,until feature support available*/
+      useNativeDriver: false,
     }).start();
   }
 
