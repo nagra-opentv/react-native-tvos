@@ -364,7 +364,9 @@ function shouldUseNativeDriver(
     return false;
   }
 
-  return config.useNativeDriver || false;
+  //Animated 'useNativeDriver' is not yet supported in RNS,so fallback to JS-based animation
+  //return config.useNativeDriver || false;
+  return false;
 }
 
 function transformDataType(value: number | string): number | string {
