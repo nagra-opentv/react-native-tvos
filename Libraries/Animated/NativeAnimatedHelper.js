@@ -364,7 +364,7 @@ function shouldUseNativeDriver(
     return false;
   }
 
-  //Animated 'useNativeDriver' not supported,so fallback to JS-based animation
+  //Animated 'useNativeDriver' is not yet supported in RNS,so fallback to JS-based animation
   //return config.useNativeDriver || false;
   return false;
 }
