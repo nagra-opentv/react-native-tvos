@@ -16,6 +16,28 @@
 namespace facebook {
 namespace react {
 
+folly::dynamic mergeDynamicProps(
+    folly::dynamic const &source,
+    folly::dynamic const &patch) {
+  auto result = source;
+  if (!result.isObject()) {
+    result = folly::dynamic::object();
+  }
+  if (!patch.isObject()) {
+    return result;
+  }
+  // Note, here we have to preserve sub-prop objects with `null` value as
+  // an indication for the legacy mounting layer that it needs to clean them up.
+  for (auto const &pair : patch.items()) {
+    result[pair.first] = pair.second;
+  }
+  return result;
+}
+
+RawProps mergeRawProps(folly::dynamic const &source, RawProps const &patch) {
+  return {mergeDynamicProps((folly::dynamic)source, (folly::dynamic)patch)};
+}
+
 UIManager::~UIManager() {
   LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
                << ").";
@@ -68,13 +90,29 @@ SharedShadowNode UIManager::cloneNode(
   SystraceSection s("UIManager::cloneNode");
 
   auto &componentDescriptor = shadowNode->getComponentDescriptor();
+
+  auto &family = shadowNode->getFamily();
+  auto props = ShadowNodeFragment::propsPlaceholder();
+
+  if (rawProps != nullptr) {
+    if (family.nativeProps_DEPRECATED != nullptr) {
+      family.nativeProps_DEPRECATED =
+          std::make_unique<folly::dynamic>(mergeDynamicProps(
+              (folly::dynamic)*rawProps, *family.nativeProps_DEPRECATED));
+
+      props = componentDescriptor.cloneProps(
+          shadowNode->getProps(),
+          mergeRawProps(*family.nativeProps_DEPRECATED, *rawProps));
+    } else {
+      props = componentDescriptor.cloneProps(
+          shadowNode->getProps(), *rawProps);
+    }
+  }
+
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
       *shadowNode,
       {
-          /* .props = */
-          rawProps ? componentDescriptor.cloneProps(
-                         shadowNode->getProps(), *rawProps)
-                   : ShadowNodeFragment::propsPlaceholder(),
+          /* .props = */ props,
           /* .children = */ children,
       });
 
@@ -281,6 +319,32 @@ void UIManager::dispatchCommand(
     folly::dynamic const args) const {
   if (delegate_) {
     delegate_->uiManagerDidDispatchCommand(shadowNode, commandName, args);
+  }
+}
+
+void UIManager::setNativeProps_DEPRECATED(
+    ShadowNode::Shared const &shadowNode,
+    RawProps const &rawProps) const {
+
+  if (delegate_ != nullptr) {
+    auto &family = shadowNode->getFamily();
+    if (family.nativeProps_DEPRECATED) {
+      family.nativeProps_DEPRECATED =
+          std::make_unique<folly::dynamic>(mergeDynamicProps(
+              *family.nativeProps_DEPRECATED, (folly::dynamic)rawProps));
+    } else {
+      family.nativeProps_DEPRECATED =
+          std::make_unique<folly::dynamic>((folly::dynamic)rawProps);
+    }
+
+    auto &componentDescriptor =
+        componentDescriptorRegistry_->at(shadowNode->getComponentHandle());
+
+    auto props = componentDescriptor.cloneProps(
+        getNewestCloneOfShadowNode(*shadowNode)->getProps(),
+        RawProps(*family.nativeProps_DEPRECATED));
+
+    delegate_->setNativeProps_DEPRECATED(shadowNode, std::move(props));
   }
 }
 

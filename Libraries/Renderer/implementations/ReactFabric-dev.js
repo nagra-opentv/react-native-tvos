@@ -3824,7 +3824,23 @@ var ReactFabricHostComponent = /*#__PURE__*/ (function() {
 
   _proto.setNativeProps = function setNativeProps(nativeProps) {
     {
-      error("Warning: setNativeProps is not currently supported in Fabric");
+      error("Warning: setNativeProps is deprecated. Please update props using React state instead");
+      const updatePayload = create(nativeProps, this.viewConfig.validAttributes);
+
+      const {stateNode} = this._internalInstanceHandle;
+      if (stateNode != null && updatePayload != null) {
+        if (this._internalInstanceHandle) {
+          nativeFabricUIManager.setNativeProps(
+          this._internalInstanceHandle.stateNode.node,
+          updatePayload
+          );
+        } else {
+          error(
+            "setNativeProps was called with a ref that isn't a " +
+            "native component. Use React.forwardRef to get access to the underlying native component"
+          );
+        }
+      }
     }
 
     return;
