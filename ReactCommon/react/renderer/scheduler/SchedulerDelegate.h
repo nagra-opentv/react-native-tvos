@@ -41,6 +41,10 @@ class SchedulerDelegate {
       std::string const &commandName,
       folly::dynamic const args) = 0;
 
+  virtual void setNativeProps_DEPRECATED(
+      const ShadowView &shadowView,
+      Props::Shared props) = 0;
+
   /*
    * Set JS responder for a view
    */
