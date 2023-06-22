@@ -31,7 +31,7 @@ class SafeAreaViewComponentDescriptor final
             safeAreaViewShadowNode);
 
     auto state =
-        std::static_pointer_cast<const SafeAreaViewShadowNode::ConcreteState>(
+        std::static_pointer_cast<const SafeAreaViewShadowNode::ConcreteStateT>(
             shadowNode->getState());
     auto stateData = state->getData();
 

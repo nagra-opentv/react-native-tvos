@@ -98,11 +98,11 @@ SharedShadowNode UIManager::cloneNode(
     if (family.nativeProps_DEPRECATED != nullptr) {
       family.nativeProps_DEPRECATED =
           std::make_unique<folly::dynamic>(mergeDynamicProps(
-              (folly::dynamic)*rawProps, *family.nativeProps_DEPRECATED));
+              *family.nativeProps_DEPRECATED, (folly::dynamic)*rawProps));
 
       props = componentDescriptor.cloneProps(
           shadowNode->getProps(),
-          mergeRawProps(*family.nativeProps_DEPRECATED, *rawProps));
+          RawProps(*family.nativeProps_DEPRECATED));
     } else {
       props = componentDescriptor.cloneProps(
           shadowNode->getProps(), *rawProps);
